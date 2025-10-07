@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API_REST.Models;
+namespace BACKEND.Models;
 
 public partial class Persona
 {

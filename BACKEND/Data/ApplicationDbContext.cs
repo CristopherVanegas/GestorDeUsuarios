@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using API_REST.Models;
+﻿using BACKEND.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace API_REST.Data;
+namespace BACKEND.Data;
 
 public partial class ApplicationDbContext : DbContext
 {

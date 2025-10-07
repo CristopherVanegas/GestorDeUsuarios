@@ -79,7 +79,7 @@ CREATE PROCEDURE ConsultarSesion
 AS
 BEGIN
     -- Consultar las sesiones de un usuario por su ID
-    SELECT fecha_ingreso, fecha_cierre
+    SELECT usuario_id_usuario, fecha_ingreso, fecha_cierre
     FROM SESSIONS
     WHERE usuario_id_usuario = @usuario_id_usuario;
 END;

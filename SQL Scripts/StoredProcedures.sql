@@ -22,3 +22,13 @@ BEGIN
 END;
 GO
 
+-- Llamar al procedimiento almacenado para insertar una nueva persona
+EXEC InsertarPersona 
+    @nombres = 'Juan',
+    @apellidos = 'Pérez',
+    @identificacion = '123456789A',   -- Identificación válida
+    @fecha_nacimiento = '1985-05-15';
+
+
+INSERT INTO PERSONA (nombres, apellidos, identificacion, fecha_nacimiento)
+	VALUES ('Juan', 'Perez', '123456789A', '1985-05-15');

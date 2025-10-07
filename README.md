@@ -48,3 +48,4 @@ Este proyecto frontend interactúa con la API RESTful de gestión de usuarios, r
 - Material Design para la UI
 
 <img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/042d4964-dbf5-40b0-9f23-0dfceceec4b9" />
+(Por el momento se encuentra así el front porque todavía no he hecho los cambios necesarios).

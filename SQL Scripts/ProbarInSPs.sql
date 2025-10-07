@@ -41,8 +41,14 @@ EXEC InsertarSesion
 
 -- Probar el procedimiento InsertarRolUsuario
 EXEC InsertarRolUsuario 
-    @rol_id_rol = 1,  -- Asegúrate de que este rol exista en la tabla ROL
+    @rol_id_rol = 2,  -- Asegúrate de que este rol exista en la tabla ROL
     @usuario_id_usuario = 1;  -- Asegúrate de que este usuario exista en la tabla USUARIOS
+
+SELECT * FROM ROL
+SELECT * FROM USUARIOS
+SELECT * FROM ROL_USUARIOS
+
+DELETE FROM ROL_USUARIOS WHERE usuario_id_usuario = 1;
 
 -- Probar el procedimiento InsertarRolOpcionRol
 EXEC InsertarRolOpcionRol 

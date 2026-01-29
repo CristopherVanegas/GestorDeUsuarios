@@ -1,4 +1,6 @@
-﻿using BACKEND.Models;
+﻿using BACKEND.Constants;
+using BACKEND.DTOs;
+using BACKEND.Models;
 using BACKEND.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,23 +21,46 @@ namespace BACKEND.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var usuario = await _service.GetUsuarioAsync(id);
+            var usuario = await _service.GetUsuarioDetalleAsync(id);
             return usuario == null ? NotFound() : Ok(usuario);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Usuario usuario)
+        public async Task<IActionResult> Post([FromBody] UsuarioCreateDto dto)
         {
-            await _service.CreateUsuarioAsync(usuario);
-            return Ok();
+            try
+            {
+                var usuario = new Usuario
+                {
+                    UserName = dto.UserName,
+                    Passcode = dto.Passcode,
+                    Mail = dto.Mail,
+                    PersonaIdPersona2 = dto.PersonaIdPersona2,
+                    SessionActive = "I",
+                    Status = "A"
+                };
+
+                await _service.CreateUsuarioAsync(usuario);
+                return Ok();
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Usuario usuario)
+        public async Task<IActionResult> Put(int id, [FromBody] UsuarioUpdateDto dto)
         {
-            usuario.IdUsuario = id;
-            await _service.UpdateUsuarioAsync(usuario);
-            return Ok();
+            try
+            {
+                await _service.UpdateUsuarioAsync(id, dto);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]

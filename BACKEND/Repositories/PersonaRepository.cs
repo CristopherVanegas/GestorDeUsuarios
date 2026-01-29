@@ -17,13 +17,16 @@ namespace BACKEND.Repositories
         // Obtener todas las personas
         public async Task<IEnumerable<Persona>> GetAllAsync()
         {
-            return await _context.Personas.ToListAsync();
+            return await _context.Personas
+                .Where(p => p.Status == "A")
+                .ToListAsync();
         }
 
         // Obtener persona por ID
         public async Task<Persona> GetByIdAsync(int id)
         {
-            return await _context.Personas.FindAsync(id);
+            return await _context.Personas
+                .FirstOrDefaultAsync(p => p.IdPersona == id && p.Status == "A");
         }
 
         // Crear una persona
@@ -44,16 +47,16 @@ namespace BACKEND.Repositories
         public async Task DeleteAsync(int id)
         {
             var persona = await _context.Personas.FindAsync(id);
-            if (persona != null)
-            {
-                // Si deseas usar eliminación lógica y tu tabla tiene Status
-                // persona.Status = "INACTIVO";
-                // _context.Personas.Update(persona);
+            if (persona == null) return;
 
-                // Si no hay campo Status, puedes hacer una eliminación física:
-                _context.Personas.Remove(persona);
-            }
+            persona.Status = "I"; // o "INACTIVO"
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Persona> GetByIdIncludingInactiveAsync(int id)
+        {
+            return await _context.Personas
+                .FirstOrDefaultAsync(p => p.IdPersona == id);
         }
     }
 }

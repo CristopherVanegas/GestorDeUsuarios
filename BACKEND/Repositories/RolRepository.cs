@@ -1,4 +1,5 @@
-﻿using BACKEND.Data;
+﻿using BACKEND.Constants;
+using BACKEND.Data;
 using BACKEND.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,10 @@ namespace BACKEND.Repositories
         public async Task DeleteAsync(int id)
         {
             var rol = await _context.Rols.FindAsync(id);
-            if (rol != null) { rol.Status = "INACTIVO"; _context.Rols.Update(rol); await _context.SaveChangesAsync(); }
+            if (rol == null) return;
+
+            rol.Status = StatusConst.Inactivo;
+            await _context.SaveChangesAsync();
         }
     }
 }

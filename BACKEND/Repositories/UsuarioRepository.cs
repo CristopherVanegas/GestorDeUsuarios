@@ -1,4 +1,5 @@
-﻿using BACKEND.Data;
+﻿using BACKEND.Constants;
+using BACKEND.Data;
 using BACKEND.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +13,12 @@ namespace BACKEND.Repositories
             _context = context;
         }
 
-        public async Task<Usuario> GetByIdAsync(int id) =>
-            await _context.Usuarios.FindAsync(id);
+        public async Task<Usuario?> GetByIdAsync(int id)
+        {
+            return await _context.Usuarios
+                .Include(u => u.PersonaIdPersona2Navigation)
+                .FirstOrDefaultAsync(u => u.IdUsuario == id);
+        }
 
         public async Task<IEnumerable<Usuario>> GetAllAsync() =>
             await _context.Usuarios.ToListAsync();
@@ -35,10 +40,17 @@ namespace BACKEND.Repositories
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario != null)
             {
-                usuario.Status = "INACTIVO"; // eliminación lógica
+                usuario.Status = StatusConst.Inactivo;
                 _context.Usuarios.Update(usuario);
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<Usuario?> GetByIdWithPersonaAsync(int id)
+        {
+            return await _context.Usuarios
+                .Include(u => u.PersonaIdPersona2Navigation)
+                .FirstOrDefaultAsync(u => u.IdUsuario == id);
+        }
+
     }
 }

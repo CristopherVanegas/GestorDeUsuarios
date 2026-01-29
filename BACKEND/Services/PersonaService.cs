@@ -22,10 +22,10 @@ namespace BACKEND.Services
             return await _personaRepository.GetByIdAsync(id);
         }
 
-        public async Task CreatePersonaAsync(Persona persona)
+        public async Task<Persona> CreatePersonaAsync(Persona persona)
         {
-            // Aquí puedes agregar validaciones de negocio
             await _personaRepository.CreateAsync(persona);
+            return persona;
         }
 
         public async Task UpdatePersonaAsync(Persona persona)
@@ -36,6 +36,11 @@ namespace BACKEND.Services
         public async Task DeletePersonaAsync(int id)
         {
             await _personaRepository.DeleteAsync(id);
+        }
+
+        public async Task<Persona> GetPersonaIncludingInactiveAsync(int id)
+        {
+            return await _personaRepository.GetByIdIncludingInactiveAsync(id);
         }
     }
 }

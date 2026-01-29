@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BACKEND.Models;
 using BACKEND.Services;
+using BACKEND.DTOs;
 
 namespace BACKEND.Controllers
 {
@@ -35,23 +36,33 @@ namespace BACKEND.Controllers
 
         // POST: api/persona
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Persona persona)
+        public async Task<IActionResult> Create(PersonaCreateDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var persona = new Persona
+            {
+                Nombres = dto.Nombres,
+                Apellidos = dto.Apellidos,
+                Identificacion = dto.Identificacion,
+                FechaNacimiento = dto.FechaNacimiento
+            };
 
-            await _personaService.CreatePersonaAsync(persona);
-            return CreatedAtAction(nameof(GetById), new { id = persona.IdPersona }, persona);
+            var result = await _personaService.CreatePersonaAsync(persona);
+            return Ok(result);
         }
 
         // PUT: api/persona/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Persona persona)
+        public async Task<IActionResult> Update(int id, PersonaUpdateDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var persona = await _personaService.GetPersonaAsync(id);
+            if (persona == null)
+                return NotFound();
 
-            persona.IdPersona = id;
+            persona.Nombres = dto.Nombres;
+            persona.Apellidos = dto.Apellidos;
+            persona.Identificacion = dto.Identificacion;
+            persona.FechaNacimiento = dto.FechaNacimiento;
+
             await _personaService.UpdatePersonaAsync(persona);
             return NoContent();
         }
@@ -61,6 +72,22 @@ namespace BACKEND.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _personaService.DeletePersonaAsync(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, PersonaStatusDto dto)
+        {
+            if (dto.Status != "A" && dto.Status != "I")
+                return BadRequest("Status inválido");
+
+            var persona = await _personaService.GetPersonaIncludingInactiveAsync(id);
+            if (persona == null)
+                return NotFound();
+
+            persona.Status = dto.Status;
+            await _personaService.UpdatePersonaAsync(persona);
+
             return NoContent();
         }
     }

@@ -15,5 +15,7 @@ public partial class Persona
 
     public DateOnly? FechaNacimiento { get; set; }
 
+    public string Status { get; set; }
+
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

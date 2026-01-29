@@ -91,18 +91,22 @@ public partial class ApplicationDbContext : DbContext
         modelBuilder.Entity<RolRolOpcione>(entity =>
         {
             entity
-                .HasNoKey()
-                .ToTable("ROL_ROL_OPCIONES");
+                .HasKey(e => new { e.RolIdRol, e.RolOpcionesIdOpciones })
+                .HasName("PK_ROL_ROL_OPCIONES");
+
+            entity.ToTable("ROL_ROL_OPCIONES");
 
             entity.Property(e => e.RolIdRol).HasColumnName("rol_id_rol");
             entity.Property(e => e.RolOpcionesIdOpciones).HasColumnName("rol_opciones_id_opciones");
 
-            entity.HasOne(d => d.RolIdRolNavigation).WithMany()
+            entity.HasOne(d => d.RolIdRolNavigation)
+                .WithMany()
                 .HasForeignKey(d => d.RolIdRol)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Rol_RolOpciones_Rol");
 
-            entity.HasOne(d => d.RolOpcionesIdOpcionesNavigation).WithMany()
+            entity.HasOne(d => d.RolOpcionesIdOpcionesNavigation)
+                .WithMany()
                 .HasForeignKey(d => d.RolOpcionesIdOpciones)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Rol_RolOpciones_RolOpciones");
@@ -110,22 +114,20 @@ public partial class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<RolUsuario>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("ROL_USUARIOS");
+            entity.HasKey(e => new { e.RolIdRol, e.UsuarioIdUsuario });
+
+            entity.ToTable("ROL_USUARIOS");
 
             entity.Property(e => e.RolIdRol).HasColumnName("rol_id_rol");
             entity.Property(e => e.UsuarioIdUsuario).HasColumnName("usuario_id_usuario");
 
-            entity.HasOne(d => d.RolIdRolNavigation).WithMany()
-                .HasForeignKey(d => d.RolIdRol)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Rol_Usuarios_Rol");
+            entity.HasOne(d => d.RolIdRolNavigation)
+                .WithMany()
+                .HasForeignKey(d => d.RolIdRol);
 
-            entity.HasOne(d => d.UsuarioIdUsuarioNavigation).WithMany()
-                .HasForeignKey(d => d.UsuarioIdUsuario)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Rol_Usuarios_Usuarios");
+            entity.HasOne(d => d.UsuarioIdUsuarioNavigation)
+                .WithMany()
+                .HasForeignKey(d => d.UsuarioIdUsuario);
         });
 
         modelBuilder.Entity<Session>(entity =>

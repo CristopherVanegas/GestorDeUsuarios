@@ -1,5 +1,8 @@
-﻿using BACKEND.Models;
+﻿using BACKEND.DTOs;
+using BACKEND.Models;
 using BACKEND.Repositories;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace BACKEND.Services
 {
@@ -12,20 +15,68 @@ namespace BACKEND.Services
             _repository = repository;
         }
 
-        public async Task<Usuario> GetUsuarioAsync(int id) =>
-            await _repository.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Usuario>> GetUsuariosAsync() =>
-            await _repository.GetAllAsync();
-
         public async Task CreateUsuarioAsync(Usuario usuario)
         {
-            // Aquí puedes agregar validaciones: correo único, password, etc.
-            await _repository.CreateAsync(usuario);
+            try
+            {
+                await _repository.CreateAsync(usuario);
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx)
+            {
+                // CHECK CONSTRAINT violations suelen ser error 547
+                if (sqlEx.Number == 547)
+                {
+                    var message = "Error de validación";
+
+                    if (sqlEx.Message.Contains("CHK_PASSCODE"))
+                        message = "La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un símbolo.";
+
+                    else if (sqlEx.Message.Contains("session_active"))
+                        message = "Estado de sesión inválido.";
+
+                    else if (sqlEx.Message.Contains("user_name"))
+                        message = "El nombre de usuario no cumple las reglas.";
+
+                    else if (sqlEx.Message.Contains("mail"))
+                        message = "El correo electrónico no es válido.";
+
+                    throw new ApplicationException(message);
+                }
+
+                throw;
+            }
         }
 
-        public async Task UpdateUsuarioAsync(Usuario usuario) =>
+        public async Task<UsuarioDetalleDto?> GetUsuarioDetalleAsync(int id)
+        {
+            var usuario = await _repository.GetByIdWithPersonaAsync(id);
+            if (usuario == null) return null;
+
+            return new UsuarioDetalleDto
+            {
+                IdUsuario = usuario.IdUsuario,
+                UserName = usuario.UserName,
+                Mail = usuario.Mail,
+                SessionActive = usuario.SessionActive!,
+                Status = usuario.Status!,
+                PersonaId = usuario.PersonaIdPersona2,
+                PersonaNombre = usuario.PersonaIdPersona2Navigation.Nombres,
+                PersonaApellido = usuario.PersonaIdPersona2Navigation.Apellidos
+            };
+        }
+
+        public async Task UpdateUsuarioAsync(int id, UsuarioUpdateDto dto)
+        {
+            var usuario = await _repository.GetByIdAsync(id);
+            if (usuario == null)
+                throw new Exception("Usuario no encontrado");
+
+            usuario.UserName = dto.UserName;
+            usuario.Mail = dto.Mail;
+            usuario.PersonaIdPersona2 = dto.PersonaIdPersona2;
+
             await _repository.UpdateAsync(usuario);
+        }
 
         public async Task DeleteUsuarioAsync(int id) =>
             await _repository.DeleteAsync(id);

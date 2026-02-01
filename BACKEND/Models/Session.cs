@@ -11,7 +11,8 @@ public partial class Session
 
     public int UsuarioIdUsuario { get; set; }
 
-    public string? Status { get; set; }
+    public string Status { get; set; } = null!;
 
+    // navegación opcional (NO se devuelve en JSON)
     public virtual Usuario UsuarioIdUsuarioNavigation { get; set; } = null!;
 }

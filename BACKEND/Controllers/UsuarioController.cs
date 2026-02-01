@@ -3,6 +3,7 @@ using BACKEND.DTOs;
 using BACKEND.Models;
 using BACKEND.Services;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
 
 namespace BACKEND.Controllers
 {
@@ -50,16 +51,20 @@ namespace BACKEND.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] UsuarioUpdateDto dto)
+        public async Task<IActionResult> Put(int id, UsuarioUpdateDto dto)
         {
             try
             {
-                await _service.UpdateUsuarioAsync(id, dto);
-                return NoContent();
+                var updated = await _service.UpdateParcialAsync(id, dto);
+
+                if (!updated)
+                    return NotFound(new { message = $"Usuario con id {id} no existe" });
+
+                return Ok(new { message = "Usuario actualizado con éxito" });
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
-                return NotFound(new { error = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
 

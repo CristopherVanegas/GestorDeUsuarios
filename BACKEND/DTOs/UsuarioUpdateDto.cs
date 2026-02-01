@@ -2,8 +2,9 @@
 {
     public class UsuarioUpdateDto
     {
-        public string UserName { get; set; } = null!;
-        public string Mail { get; set; } = null!;
-        public int PersonaIdPersona2 { get; set; }
+        public string? UserName { get; set; }
+        public string? Passcode { get; set; }
+        public string? Mail { get; set; }
+        public string? SessionActive { get; set; }
     }
 }

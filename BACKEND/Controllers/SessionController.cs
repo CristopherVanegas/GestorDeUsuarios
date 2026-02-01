@@ -1,4 +1,4 @@
-﻿using BACKEND.Models;
+﻿using BACKEND.DTOs;
 using BACKEND.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,37 +15,25 @@ namespace BACKEND.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] SessionLoginDto dto)
         {
-            var s = await _service.GetByIdAsync(id);
-            if (s == null) return NotFound();
-            return Ok(s);
+            try
+            {
+                await _service.LoginAsync(dto.UsuarioIdUsuario);
+                return Ok(new { message = "Sesión iniciada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Session s)
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] SessionLoginDto dto)
         {
-            await _service.CreateAsync(s);
-            return Ok(s);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Session s)
-        {
-            s.UsuarioIdUsuario = id; // o asigna el id correcto según tu lógica
-            await _service.UpdateAsync(s);
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            await _service.LogoutAsync(dto.UsuarioIdUsuario);
+            return Ok(new { message = "Sesión cerrada correctamente" });
         }
     }
 }

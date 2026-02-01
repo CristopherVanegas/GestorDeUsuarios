@@ -45,12 +45,12 @@ namespace BACKEND.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
         public async Task<Usuario?> GetByIdWithPersonaAsync(int id)
         {
             return await _context.Usuarios
                 .Include(u => u.PersonaIdPersona2Navigation)
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
         }
-
     }
 }

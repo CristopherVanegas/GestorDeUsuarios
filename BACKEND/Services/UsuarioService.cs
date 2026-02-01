@@ -3,6 +3,7 @@ using BACKEND.Models;
 using BACKEND.Repositories;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 
 namespace BACKEND.Services
 {
@@ -65,17 +66,26 @@ namespace BACKEND.Services
             };
         }
 
-        public async Task UpdateUsuarioAsync(int id, UsuarioUpdateDto dto)
+        public async Task<bool> UpdateParcialAsync(int id, UsuarioUpdateDto dto)
         {
             var usuario = await _repository.GetByIdAsync(id);
             if (usuario == null)
-                throw new Exception("Usuario no encontrado");
+                return false;
 
-            usuario.UserName = dto.UserName;
-            usuario.Mail = dto.Mail;
-            usuario.PersonaIdPersona2 = dto.PersonaIdPersona2;
+            if (!string.IsNullOrWhiteSpace(dto.UserName))
+                usuario.UserName = dto.UserName;
+
+            if (!string.IsNullOrWhiteSpace(dto.Passcode))
+                usuario.Passcode = dto.Passcode;
+
+            if (!string.IsNullOrWhiteSpace(dto.Mail))
+                usuario.Mail = dto.Mail;
+
+            if (!string.IsNullOrWhiteSpace(dto.SessionActive))
+                usuario.SessionActive = dto.SessionActive;
 
             await _repository.UpdateAsync(usuario);
+            return true;
         }
 
         public async Task DeleteUsuarioAsync(int id) =>
